@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, hasMany, model, property} from '@loopback/repository';
+import {Movie} from './movie.model';
 
 @model({
   settings: {
@@ -37,6 +38,9 @@ export class Genre extends Entity {
     type: 'date',
   })
   updatedAt?: string;
+
+  @hasMany(() => Movie, {keyFrom: "id"})
+  movies?: Movie[];
 
 
   constructor(data?: Partial<Genre>) {
