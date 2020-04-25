@@ -1,16 +1,24 @@
-import {DefaultCrudRepository} from '@loopback/repository';
-import {Genre, GenreRelations} from '../models';
+import {Getter, inject} from '@loopback/core';
+import {DefaultCrudRepository, HasManyRepositoryFactory, repository} from '@loopback/repository';
 import {LocalDataSource} from '../datasources';
-import {inject} from '@loopback/core';
+import {Genre, GenreRelations, Movie} from '../models';
+import {MovieRepository} from './movie.repository';
 
 export class GenreRepository extends DefaultCrudRepository<
   Genre,
   typeof Genre.prototype.id,
   GenreRelations
-> {
+  > {
+  public readonly movies: HasManyRepositoryFactory<Movie, typeof Genre.prototype.id>;
+
   constructor(
     @inject('datasources.local') dataSource: LocalDataSource,
+    @repository.getter('MovieRepository') getMovieRepository: Getter<MovieRepository>
+
   ) {
     super(Genre, dataSource);
+    this.movies = this.createHasManyRepositoryFactoryFor('movies', getMovieRepository)
+
+    this.registerInclusionResolver('movies', this.movies.inclusionResolver);
   }
 }

@@ -1,12 +1,7 @@
-import {
-  inject,
-  lifeCycleObserver,
-  LifeCycleObserver,
-  ValueOrPromise,
-} from '@loopback/core';
+import {inject, lifeCycleObserver, LifeCycleObserver, ValueOrPromise} from '@loopback/core';
 import {juggler} from '@loopback/repository';
-import config from './local.datasource.config.json';
 import chalk from "chalk";
+import config from './local.datasource.config.json';
 
 @lifeCycleObserver('datasource')
 export class LocalDataSource extends juggler.DataSource
@@ -24,7 +19,7 @@ export class LocalDataSource extends juggler.DataSource
    * Start the datasource when application is started
    */
   start(): ValueOrPromise<void> {
-    console.log(chalk.red.bgWhite.bold(`Connected to ${config.name} database`));
+    console.log(chalk.blue.bold(`Connected to ${config.name} database`));
     // Add your logic here to be invoked when the application is started
   }
 
