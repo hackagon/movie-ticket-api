@@ -1,6 +1,6 @@
 import {Getter, inject} from '@loopback/core';
 import {DefaultCrudRepository, HasManyRepositoryFactory, repository} from '@loopback/repository';
-import {LocalDataSource} from '../datasources';
+import {StagingDataSource} from '../datasources';
 import {Genre, GenreRelations, Movie} from '../models';
 import {MovieRepository} from './movie.repository';
 
@@ -12,7 +12,7 @@ export class GenreRepository extends DefaultCrudRepository<
   public readonly movies: HasManyRepositoryFactory<Movie, typeof Genre.prototype.id>;
 
   constructor(
-    @inject('datasources.local') dataSource: LocalDataSource,
+    @inject('datasources.staging') dataSource: StagingDataSource,
     @repository.getter('MovieRepository') getMovieRepository: Getter<MovieRepository>
 
   ) {

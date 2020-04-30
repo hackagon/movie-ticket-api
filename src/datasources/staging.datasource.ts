@@ -1,15 +1,15 @@
 import {inject, lifeCycleObserver, LifeCycleObserver, ValueOrPromise} from '@loopback/core';
 import {juggler} from '@loopback/repository';
 import chalk from "chalk";
-import config from './local.datasource.config.json';
+import config from './staging.datasource.config.json';
 
 @lifeCycleObserver('datasource')
-export class LocalDataSource extends juggler.DataSource
+export class StagingDataSource extends juggler.DataSource
   implements LifeCycleObserver {
-  static dataSourceName = 'local';
+  static dataSourceName = 'staging';
 
   constructor(
-    @inject('datasources.config.local', {optional: true})
+    @inject('datasources.config.staging', {optional: true})
     dsConfig: object = config,
   ) {
     super(dsConfig);
@@ -19,7 +19,7 @@ export class LocalDataSource extends juggler.DataSource
    * Start the datasource when application is started
    */
   start(): ValueOrPromise<void> {
-    console.log(chalk.blue.bold(`Connected to ${config.name} local database`));
+    console.log(chalk.blue.bold(`Connected to ${config.name} staging database`));
     // Add your logic here to be invoked when the application is started
   }
 
@@ -28,7 +28,6 @@ export class LocalDataSource extends juggler.DataSource
    * application to be shut down gracefully.
    */
   stop(): ValueOrPromise<void> {
-    console.log(chalk.red.bgWhite.bold(`Disconnected to ${config.name} database`));
     return super.disconnect();
   }
 }
