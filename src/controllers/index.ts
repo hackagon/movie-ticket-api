@@ -4,3 +4,4 @@ export * from './movie.controller';
 export * from './genre-movies.controller';
 export * from './cinema.controller';
 export * from './room.controller';
+export * from './seat.controller';
