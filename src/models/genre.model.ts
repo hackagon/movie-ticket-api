@@ -2,11 +2,11 @@ import {Entity, hasMany, model, property} from '@loopback/repository';
 import {Movie} from './movie.model';
 
 @model({
-  settings: {
-    mysql: {
-      table: 'genre',
-    },
-  },
+  // settings: {
+  //   mysql: {
+  //     table: 'genre',
+  //   },
+  // },
 })
 export class Genre extends Entity {
   @property({

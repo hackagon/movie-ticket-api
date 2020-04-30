@@ -1,28 +1,16 @@
-import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where,
-} from '@loopback/repository';
-import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-} from '@loopback/rest';
+import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
+import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
+import BBPromise from 'bluebird';
 import {Room} from '../models';
-import {RoomRepository} from '../repositories';
+import {RoomRepository, seatCodes, SeatRepository} from '../repositories';
+
 
 export class RoomController {
   constructor(
     @repository(RoomRepository)
-    public roomRepository : RoomRepository,
+    public roomRepository: RoomRepository,
+    @repository(SeatRepository)
+    public seatRepository: SeatRepository,
   ) {}
 
   @post('/rooms', {
@@ -46,6 +34,9 @@ export class RoomController {
     })
     room: Omit<Room, 'id'>,
   ): Promise<Room> {
+    await BBPromise.map(seatCodes, code => {
+      return this.seatRepository.create({code: code})
+    })
     return this.roomRepository.create(room);
   }
 

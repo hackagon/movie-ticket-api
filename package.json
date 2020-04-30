@@ -55,6 +55,7 @@
     "@loopback/rest": "^3.2.1",
     "@loopback/rest-explorer": "^2.0.4",
     "@loopback/service-proxy": "^2.0.4",
+    "bluebird": "^3.7.2",
     "chalk": "^4.0.0",
     "loopback-connector-mysql": "^5.4.3",
     "tslib": "^1.10.0"
@@ -63,6 +64,7 @@
     "@loopback/build": "^5.0.1",
     "@loopback/eslint-config": "^6.0.3",
     "@loopback/testlab": "^3.0.1",
+    "@types/bluebird": "^3.5.30",
     "@types/node": "^10.17.19",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.27.0",
