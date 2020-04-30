@@ -54,6 +54,12 @@ export class Movie extends Entity {
   })
   duration?: number;
 
+  @property({
+    type: 'date',
+    default: () => new Date()
+  })
+  createdAt?: string;
+
 
   constructor(data?: Partial<Movie>) {
     super(data);

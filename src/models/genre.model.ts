@@ -34,11 +34,6 @@ export class Genre extends Entity {
   })
   createdAt?: string;
 
-  @property({
-    type: 'date',
-  })
-  updatedAt?: string;
-
   @hasMany(() => Movie, {keyFrom: "id"})
   movies?: Movie[];
 
