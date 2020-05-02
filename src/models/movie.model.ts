@@ -22,10 +22,10 @@ export class Movie extends Entity {
   name: string;
 
   @property({
-    type: 'number',
+    type: 'string',
     required: true,
   })
-  directorId: number;
+  director: string;
 
   @property({
     type: 'number',
