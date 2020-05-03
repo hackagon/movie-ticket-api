@@ -6,7 +6,10 @@ import {RestApplication} from '@loopback/rest';
 import {RestExplorerBindings, RestExplorerComponent} from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
+import {JWTService} from "./authentication/jwt-services";
+import {TokenServiceBindings, TokenServiceConstants} from "./authentication/keys";
 import {MySequence} from './sequence';
+
 
 export class MovieTicketApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
@@ -14,6 +17,7 @@ export class MovieTicketApplication extends BootMixin(
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
+    this.setUpBindings();
     // Set up the custom sequence
     this.sequence(MySequence);
 
@@ -39,5 +43,22 @@ export class MovieTicketApplication extends BootMixin(
         nested: true,
       },
     };
+
+  }
+
+  setUpBindings(): void {
+    // ...
+
+    this.bind(TokenServiceBindings.TOKEN_SECRET).to(
+      TokenServiceConstants.TOKEN_SECRET_VALUE,
+    );
+
+    this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(
+      TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
+    );
+
+    this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
+
+    // ...
   }
 }

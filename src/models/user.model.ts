@@ -28,6 +28,11 @@ export class User extends Entity {
   name: string;
 
   @property({
+    type: 'array',
+  })
+  roles?: string[];
+
+  @property({
     type: 'date',
   })
   DOB?: string;
