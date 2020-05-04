@@ -21,6 +21,11 @@ export class Room extends Entity {
   })
   createdAt?: string;
 
+  @property({
+    type: 'number',
+  })
+  cinemaId?: number;
+
   constructor(data?: Partial<Room>) {
     super(data);
   }
