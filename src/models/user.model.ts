@@ -16,11 +16,11 @@ export class User extends Entity {
   })
   email: string;
 
-  @property({
-    type: 'string',
-    required: true,
-  })
-  password: string;
+  // @property({
+  //   type: 'string',
+  //   required: true,
+  // })
+  // password: string;
 
   @property({
     type: 'string',

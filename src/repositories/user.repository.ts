@@ -41,6 +41,7 @@ export class UserRepository extends DefaultCrudRepository<
 }
 
 export interface Credentials {
+  id: string
   email: string;
   password: string;
 }

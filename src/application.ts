@@ -6,8 +6,10 @@ import {RestApplication} from '@loopback/rest';
 import {RestExplorerBindings, RestExplorerComponent} from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
+import {BcryptHasher} from './authentication/hash.password.bcryptjs';
 import {JWTService} from "./authentication/jwt-services";
-import {TokenServiceBindings, TokenServiceConstants} from "./authentication/keys";
+import {PasswordHasherBindings, TokenServiceBindings, TokenServiceConstants, UserServiceBindings} from "./authentication/keys";
+import {MyUserService} from './authentication/user-service';
 import {MySequence} from './sequence';
 
 
@@ -47,18 +49,20 @@ export class MovieTicketApplication extends BootMixin(
   }
 
   setUpBindings(): void {
-    // ...
-
+    // Token service bindings
     this.bind(TokenServiceBindings.TOKEN_SECRET).to(
       TokenServiceConstants.TOKEN_SECRET_VALUE,
     );
-
     this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(
       TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
     );
-
     this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
 
-    // ...
+    // Password hasher bindings
+    this.bind(PasswordHasherBindings.ROUNDS).to(10);
+    this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(BcryptHasher);
+
+    // User service bindings
+    this.bind(UserServiceBindings.USER_SERVICE).toClass(MyUserService);
   }
 }
