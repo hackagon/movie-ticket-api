@@ -14,3 +14,4 @@ export * from './card.controller';
 export * from './user-card.controller';
 export * from './ticket.controller';
 export * from './card-ticket.controller';
+export * from './schedule-seat.controller';

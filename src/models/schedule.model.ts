@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Seat} from './seat.model';
 
 @model()
 export class Schedule extends Entity {
@@ -32,6 +33,9 @@ export class Schedule extends Entity {
     default: () => new Date()
   })
   createdAt?: string;
+
+  @hasMany(() => Seat)
+  seats: Seat[];
 
   constructor(data?: Partial<Schedule>) {
     super(data);
