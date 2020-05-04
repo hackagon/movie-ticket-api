@@ -1,5 +1,6 @@
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
 import {get, getModelSchemaRef, param, post, requestBody} from '@loopback/rest';
+import createError from "http-errors";
 import moment from "moment";
 import {Ticket} from '../models';
 import {CardRepository, SeatRepository, TicketRepository} from '../repositories';
@@ -38,7 +39,8 @@ export class TicketController {
 
     // check seat is booked?
     const instance__seat = await this.seatRepository.findById(ticket.seatId);
-    if (instance__seat.isBooked) throw new Error("Seat is booked");
+    if (instance__seat.isBooked) throw createError(400, "Seat is booked")
+    // new Error("Seat is booked");
 
     // check number of tickets daily
     const startOfDay = moment().startOf('day').format();
@@ -56,18 +58,14 @@ export class TicketController {
 
     const number_of_tickets = instance__tickets.length;
 
-    switch (instance__card.level) {
-      case "SILVER":
-        if (number_of_tickets > 2) throw new Error("Silver is allow at most 2 movies every day")
-        break;
+    if (instance__card.level === "silver" && number_of_tickets > 2)
+      throw createError(400, "Silver is allow at most 2 movies every day");
 
-      case "GOLD":
-        if (number_of_tickets > 5) throw new Error("Gold is allow at most 2 movies every day")
-        break;
-    }
+    if (instance__card.level === "gold" && number_of_tickets > 5)
+      throw createError(400, "Gold is allow at most 5 movies every day");
 
     // booking
-    const savedTicket = this.ticketRepository.create(ticket);
+    const savedTicket = await this.ticketRepository.create(ticket);
 
     // set isBooked to true
     await this.seatRepository.updateById(ticket.seatId, {isBooked: true});
