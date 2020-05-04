@@ -1,17 +1,23 @@
-import {inject} from '@loopback/core';
-import {DefaultCrudRepository} from '@loopback/repository';
+import {inject, Getter} from '@loopback/core';
+import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loopback/repository';
 import {StagingDataSource} from '../datasources';
-import {Room, RoomRelations} from '../models';
+import {Room, RoomRelations, Seat} from '../models';
+import {SeatRepository} from './seat.repository';
 
 export class RoomRepository extends DefaultCrudRepository<
   Room,
   typeof Room.prototype.id,
   RoomRelations
   > {
+
+  public readonly seats: HasManyRepositoryFactory<Seat, typeof Room.prototype.id>;
+
   constructor(
-    @inject('datasources.staging') dataSource: StagingDataSource,
+    @inject('datasources.staging') dataSource: StagingDataSource, @repository.getter('SeatRepository') protected seatRepositoryGetter: Getter<SeatRepository>,
   ) {
     super(Room, dataSource);
+    this.seats = this.createHasManyRepositoryFactoryFor('seats', seatRepositoryGetter,);
+    this.registerInclusionResolver('seats', this.seats.inclusionResolver);
   }
 }
 

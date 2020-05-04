@@ -7,10 +7,8 @@ import {RoomRepository, seatCodes, SeatRepository} from '../repositories';
 
 export class RoomController {
   constructor(
-    @repository(RoomRepository)
-    public roomRepository: RoomRepository,
-    @repository(SeatRepository)
-    public seatRepository: SeatRepository,
+    @repository(RoomRepository) public roomRepository: RoomRepository,
+    @repository(SeatRepository) public seatRepository: SeatRepository,
   ) {}
 
   @post('/rooms', {
@@ -34,10 +32,12 @@ export class RoomController {
     })
     room: Omit<Room, 'id'>,
   ): Promise<Room> {
+    const instance__room = await this.roomRepository.create(room);
     await BBPromise.map(seatCodes, code => {
-      return this.seatRepository.create({code: code})
+      return this.seatRepository.create({roomId: instance__room.id, code: code})
     })
-    return this.roomRepository.create(room);
+
+    return instance__room
   }
 
   @get('/rooms/count', {
