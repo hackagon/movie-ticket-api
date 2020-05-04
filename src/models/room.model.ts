@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Schedule} from './schedule.model';
 
 export const seatCodes = [
   "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10",
@@ -41,7 +42,8 @@ export class Room extends Entity {
   })
   cinemaId?: number;
 
-
+  @hasMany(() => Schedule)
+  schedules: Schedule[];
 
   constructor(data?: Partial<Room>) {
     super(data);

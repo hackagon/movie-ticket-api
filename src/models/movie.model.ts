@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Schedule} from './schedule.model';
 
 @model({
   // settings: {
@@ -60,6 +61,8 @@ export class Movie extends Entity {
   })
   createdAt?: string;
 
+  @hasMany(() => Schedule)
+  schedules: Schedule[];
 
   constructor(data?: Partial<Movie>) {
     super(data);

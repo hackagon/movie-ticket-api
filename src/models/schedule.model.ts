@@ -10,6 +10,18 @@ export class Schedule extends Entity {
   id?: number;
 
   @property({
+    type: 'number',
+    required: true,
+  })
+  movieId: number;
+
+  @property({
+    type: 'number',
+    required: true,
+  })
+  roomId: number;
+
+  @property({
     type: 'date',
     required: true,
   })

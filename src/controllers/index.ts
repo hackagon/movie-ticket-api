@@ -7,3 +7,6 @@ export * from './ping.controller';
 export * from './room.controller';
 export * from './seat.controller';
 
+export * from './schedule.controller';
+export * from './movie-schedule.controller';
+export * from './room-schedule.controller';
