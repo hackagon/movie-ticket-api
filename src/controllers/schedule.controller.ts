@@ -1,28 +1,14 @@
-import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where,
-} from '@loopback/repository';
-import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-} from '@loopback/rest';
+import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
+import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
+import BBPromise from "bluebird";
 import {Schedule} from '../models';
-import {ScheduleRepository} from '../repositories';
+import {RoomRepository, ScheduleRepository, SeatRepository} from '../repositories';
 
 export class ScheduleController {
   constructor(
-    @repository(ScheduleRepository)
-    public scheduleRepository : ScheduleRepository,
+    @repository(ScheduleRepository) public scheduleRepository: ScheduleRepository,
+    @repository(RoomRepository) public roomRepository: RoomRepository,
+    @repository(SeatRepository) public seatRepository: SeatRepository,
   ) {}
 
   @post('/schedules', {
@@ -46,7 +32,19 @@ export class ScheduleController {
     })
     schedule: Omit<Schedule, 'id'>,
   ): Promise<Schedule> {
-    return this.scheduleRepository.create(schedule);
+    const roomId = schedule.roomId;
+    const instance__room = await this.roomRepository.findById(roomId)
+    const instance__schedule = await this.scheduleRepository.create(schedule);
+    const seatCodes = instance__room.seatCodes ? JSON.parse(instance__room.seatCodes) : []
+
+    await BBPromise.map(seatCodes, (code: string) => {
+      return this.seatRepository.create({
+        scheduleId: instance__schedule.id,
+        code
+      })
+    })
+
+    return instance__schedule;
   }
 
   @get('/schedules/count', {
@@ -168,6 +166,9 @@ export class ScheduleController {
     },
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
+    await this.seatRepository.deleteAll({
+      scheduleId: id
+    })
     await this.scheduleRepository.deleteById(id);
   }
 }

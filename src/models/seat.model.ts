@@ -13,12 +13,13 @@ export class Seat extends Entity {
     type: 'number',
     required: true,
   })
-  roomId: number;
+  scheduleId: number;
 
   @property({
     type: 'string',
+    required: true,
   })
-  code?: string;
+  code: string;
 
   @property({
     type: 'date',
