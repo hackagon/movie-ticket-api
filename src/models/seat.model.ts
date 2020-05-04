@@ -22,6 +22,12 @@ export class Seat extends Entity {
   code: string;
 
   @property({
+    type: 'boolean',
+    default: false
+  })
+  isBooked: Boolean;
+
+  @property({
     type: 'date',
     default: () => new Date()
   })

@@ -1,28 +1,14 @@
-import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where,
-} from '@loopback/repository';
-import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-} from '@loopback/rest';
+import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
+import {get, getModelSchemaRef, param, post, requestBody} from '@loopback/rest';
+import moment from "moment";
 import {Ticket} from '../models';
-import {TicketRepository} from '../repositories';
+import {CardRepository, SeatRepository, TicketRepository} from '../repositories';
 
 export class TicketController {
   constructor(
-    @repository(TicketRepository)
-    public ticketRepository : TicketRepository,
+    @repository(TicketRepository) public ticketRepository: TicketRepository,
+    @repository(SeatRepository) public seatRepository: SeatRepository,
+    @repository(CardRepository) public cardRepository: CardRepository
   ) {}
 
   @post('/tickets', {
@@ -46,7 +32,47 @@ export class TicketController {
     })
     ticket: Omit<Ticket, 'id'>,
   ): Promise<Ticket> {
-    return this.ticketRepository.create(ticket);
+
+    // card level
+    const instance__card = await this.cardRepository.findById(ticket.cardId);
+
+    // check seat is booked?
+    const instance__seat = await this.seatRepository.findById(ticket.seatId);
+    if (instance__seat.isBooked) throw new Error("Seat is booked");
+
+    // check number of tickets daily
+    const startOfDay = moment().startOf('day').format();
+    const endOfDay = moment().endOf('day').format();
+
+    const instance__tickets = await this.ticketRepository.find({
+      where: {
+        cardId: ticket.cardId,
+        createdAt: {
+          gt: startOfDay,
+          lt: endOfDay
+        }
+      }
+    })
+
+    const number_of_tickets = instance__tickets.length;
+
+    switch (instance__card.level) {
+      case "SILVER":
+        if (number_of_tickets > 2) throw new Error("Silver is allow at most 2 movies every day")
+        break;
+
+      case "GOLD":
+        if (number_of_tickets > 5) throw new Error("Gold is allow at most 2 movies every day")
+        break;
+    }
+
+    // booking
+    const savedTicket = this.ticketRepository.create(ticket);
+
+    // set isBooked to true
+    await this.seatRepository.updateById(ticket.seatId, {isBooked: true});
+
+    return savedTicket
   }
 
   @get('/tickets/count', {
@@ -84,27 +110,27 @@ export class TicketController {
     return this.ticketRepository.find(filter);
   }
 
-  @patch('/tickets', {
-    responses: {
-      '200': {
-        description: 'Ticket PATCH success count',
-        content: {'application/json': {schema: CountSchema}},
-      },
-    },
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Ticket, {partial: true}),
-        },
-      },
-    })
-    ticket: Ticket,
-    @param.where(Ticket) where?: Where<Ticket>,
-  ): Promise<Count> {
-    return this.ticketRepository.updateAll(ticket, where);
-  }
+  // @patch('/tickets', {
+  //   responses: {
+  //     '200': {
+  //       description: 'Ticket PATCH success count',
+  //       content: {'application/json': {schema: CountSchema}},
+  //     },
+  //   },
+  // })
+  // async updateAll(
+  //   @requestBody({
+  //     content: {
+  //       'application/json': {
+  //         schema: getModelSchemaRef(Ticket, {partial: true}),
+  //       },
+  //     },
+  //   })
+  //   ticket: Ticket,
+  //   @param.where(Ticket) where?: Where<Ticket>,
+  // ): Promise<Count> {
+  //   return this.ticketRepository.updateAll(ticket, where);
+  // }
 
   @get('/tickets/{id}', {
     responses: {
@@ -125,49 +151,49 @@ export class TicketController {
     return this.ticketRepository.findById(id, filter);
   }
 
-  @patch('/tickets/{id}', {
-    responses: {
-      '204': {
-        description: 'Ticket PATCH success',
-      },
-    },
-  })
-  async updateById(
-    @param.path.number('id') id: number,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Ticket, {partial: true}),
-        },
-      },
-    })
-    ticket: Ticket,
-  ): Promise<void> {
-    await this.ticketRepository.updateById(id, ticket);
-  }
+  // @patch('/tickets/{id}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Ticket PATCH success',
+  //     },
+  //   },
+  // })
+  // async updateById(
+  //   @param.path.number('id') id: number,
+  //   @requestBody({
+  //     content: {
+  //       'application/json': {
+  //         schema: getModelSchemaRef(Ticket, {partial: true}),
+  //       },
+  //     },
+  //   })
+  //   ticket: Ticket,
+  // ): Promise<void> {
+  //   await this.ticketRepository.updateById(id, ticket);
+  // }
 
-  @put('/tickets/{id}', {
-    responses: {
-      '204': {
-        description: 'Ticket PUT success',
-      },
-    },
-  })
-  async replaceById(
-    @param.path.number('id') id: number,
-    @requestBody() ticket: Ticket,
-  ): Promise<void> {
-    await this.ticketRepository.replaceById(id, ticket);
-  }
+  // @put('/tickets/{id}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Ticket PUT success',
+  //     },
+  //   },
+  // })
+  // async replaceById(
+  //   @param.path.number('id') id: number,
+  //   @requestBody() ticket: Ticket,
+  // ): Promise<void> {
+  //   await this.ticketRepository.replaceById(id, ticket);
+  // }
 
-  @del('/tickets/{id}', {
-    responses: {
-      '204': {
-        description: 'Ticket DELETE success',
-      },
-    },
-  })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.ticketRepository.deleteById(id);
-  }
+  // @del('/tickets/{id}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Ticket DELETE success',
+  //     },
+  //   },
+  // })
+  // async deleteById(@param.path.number('id') id: number): Promise<void> {
+  //   await this.ticketRepository.deleteById(id);
+  // }
 }

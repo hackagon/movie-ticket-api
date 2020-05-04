@@ -1,28 +1,12 @@
-import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where,
-} from '@loopback/repository';
-import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-} from '@loopback/rest';
+import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
+import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
 import {Movie} from '../models';
 import {MovieRepository} from '../repositories';
 
 export class MovieController {
   constructor(
     @repository(MovieRepository)
-    public movieRepository : MovieRepository,
+    public movieRepository: MovieRepository,
   ) {}
 
   @post('/movies', {
