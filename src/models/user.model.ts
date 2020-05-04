@@ -39,6 +39,12 @@ export class User extends Entity {
   @hasOne(() => UserCredentials)
   userCredentials: UserCredentials;
 
+  @property({
+    type: 'date',
+    default: () => new Date()
+  })
+  createdAt?: string;
+
   // Indexer property to allow additional data
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;

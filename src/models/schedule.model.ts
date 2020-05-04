@@ -1,7 +1,7 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model()
-export class Seat extends Entity {
+export class Schedule extends Entity {
   @property({
     type: 'number',
     id: true,
@@ -10,15 +10,10 @@ export class Seat extends Entity {
   id?: number;
 
   @property({
-    type: 'number',
+    type: 'date',
     required: true,
   })
-  roomId: number;
-
-  @property({
-    type: 'string',
-  })
-  code?: string;
+  startTime: string;
 
   @property({
     type: 'date',
@@ -26,14 +21,13 @@ export class Seat extends Entity {
   })
   createdAt?: string;
 
-
-  constructor(data?: Partial<Seat>) {
+  constructor(data?: Partial<Schedule>) {
     super(data);
   }
 }
 
-export interface SeatRelations {
+export interface ScheduleRelations {
   // describe navigational properties here
 }
 
-export type SeatWithRelations = Seat & SeatRelations;
+export type ScheduleWithRelations = Schedule & ScheduleRelations;
