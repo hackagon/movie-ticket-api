@@ -1,7 +1,7 @@
 import {UserService} from '@loopback/authentication';
 import {inject} from '@loopback/core';
-import {Count, CountSchema, model, property, repository, Where} from '@loopback/repository';
-import {get, getModelSchemaRef, param, post, requestBody} from '@loopback/rest';
+import {Count, CountSchema, Filter, FilterExcludingWhere, model, property, repository, Where} from '@loopback/repository';
+import {del, get, getModelSchemaRef, param, post, requestBody} from '@loopback/rest';
 import _ from "lodash";
 import {PasswordHasher} from '../authentication/hash.password.bcryptjs';
 import {JWTService} from '../authentication/jwt-services';
@@ -42,7 +42,7 @@ export class UserController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(User, {
+          schema: getModelSchemaRef(NewUserRequest, {
             title: 'NewUser',
             exclude: ['id'],
           }),
@@ -55,8 +55,6 @@ export class UserController {
     // validateCredentials(_.pick(newUserRequest, ["email", "password"]))
 
     const password = await this.passwordHasher.hashPassword(newUserRequest.password)
-    console.log("UserController -> password", password)
-    console.log("UserController -> newUserRequest", newUserRequest)
 
     const savedUser = await this.userRepository.create(
       _.omit(newUserRequest, ["password"])
@@ -117,26 +115,26 @@ export class UserController {
     return this.userRepository.count(where);
   }
 
-  // @get('/users', {
-  //   responses: {
-  //     '200': {
-  //       description: 'Array of User model instances',
-  //       content: {
-  //         'application/json': {
-  //           schema: {
-  //             type: 'array',
-  //             items: getModelSchemaRef(User, {includeRelations: true}),
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  // })
-  // async find(
-  //   @param.filter(User) filter?: Filter<User>,
-  // ): Promise<User[]> {
-  //   return this.userRepository.find(filter);
-  // }
+  @get('/users', {
+    responses: {
+      '200': {
+        description: 'Array of User model instances',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'array',
+              items: getModelSchemaRef(User, {includeRelations: true}),
+            },
+          },
+        },
+      },
+    },
+  })
+  async find(
+    @param.filter(User) filter?: Filter<User>,
+  ): Promise<User[]> {
+    return this.userRepository.find(filter);
+  }
 
   // @patch('/users', {
   //   responses: {
@@ -160,24 +158,24 @@ export class UserController {
   //   return this.userRepository.updateAll(user, where);
   // }
 
-  // @get('/users/{id}', {
-  //   responses: {
-  //     '200': {
-  //       description: 'User model instance',
-  //       content: {
-  //         'application/json': {
-  //           schema: getModelSchemaRef(User, {includeRelations: true}),
-  //         },
-  //       },
-  //     },
-  //   },
-  // })
-  // async findById(
-  //   @param.path.number('id') id: number,
-  //   @param.filter(User, {exclude: 'where'}) filter?: FilterExcludingWhere<User>
-  // ): Promise<User> {
-  //   return this.userRepository.findById(id, filter);
-  // }
+  @get('/users/{id}', {
+    responses: {
+      '200': {
+        description: 'User model instance',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(User, {includeRelations: true}),
+          },
+        },
+      },
+    },
+  })
+  async findById(
+    @param.path.number('id') id: number,
+    @param.filter(User, {exclude: 'where'}) filter?: FilterExcludingWhere<User>
+  ): Promise<User> {
+    return this.userRepository.findById(id, filter);
+  }
 
   // @patch('/users/{id}', {
   //   responses: {
@@ -214,15 +212,15 @@ export class UserController {
   //   await this.userRepository.replaceById(id, user);
   // }
 
-  // @del('/users/{id}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'User DELETE success',
-  //     },
-  //   },
-  // })
-  // async deleteById(@param.path.number('id') id: number): Promise<void> {
-  //   await this.userRepository.deleteById(id);
-  // }
+  @del('/users/{id}', {
+    responses: {
+      '204': {
+        description: 'User DELETE success',
+      },
+    },
+  })
+  async deleteById(@param.path.number('id') id: number): Promise<void> {
+    await this.userRepository.deleteById(id);
+  }
 }
 
