@@ -4,3 +4,4 @@ export * from './cinema.repository';
 export * from './room.repository';
 export * from './seat.repository';
 export * from './user.repository';
+export * from './user-credentials.repository';

@@ -1,7 +1,8 @@
-import {inject} from '@loopback/core';
-import {DefaultCrudRepository} from '@loopback/repository';
+import {Getter, inject} from '@loopback/core';
+import {DefaultCrudRepository, HasOneRepositoryFactory, repository} from '@loopback/repository';
 import {StagingDataSource} from '../datasources';
 import {User, UserCredentials, UserRelations} from '../models';
+import {UserCredentialsRepository} from './user-credentials.repository';
 
 export class UserRepository extends DefaultCrudRepository<
   User,
@@ -16,6 +17,7 @@ export class UserRepository extends DefaultCrudRepository<
 
   constructor(
     @inject('datasources.staging') dataSource: StagingDataSource,
+    @repository.getter('UserCredentialsRepository') protected userCredentialsRepositoryGetter: Getter<UserCredentialsRepository>
   ) {
     super(User, dataSource);
     this.userCredentials = this.createHasOneRepositoryFactoryFor(

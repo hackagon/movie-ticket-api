@@ -56,7 +56,7 @@ export class MyUserService implements UserService<User, Credentials> {
       [securityId]: user.id?.toString() || "",
       name: user.name || "",
       id: user.id || "",
-      roles: user.roles || "",
+      role: user.role || "",
     };
 
     return userProfile;

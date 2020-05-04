@@ -1,28 +1,12 @@
-import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where,
-} from '@loopback/repository';
-import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-} from '@loopback/rest';
+import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
+import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
 import {Genre} from '../models';
 import {GenreRepository} from '../repositories';
 
 export class GenreController {
   constructor(
     @repository(GenreRepository)
-    public genreRepository : GenreRepository,
+    public genreRepository: GenreRepository,
   ) {}
 
   @post('/genres', {
