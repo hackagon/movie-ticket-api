@@ -35,6 +35,7 @@ export class ScheduleController {
     const roomId = schedule.roomId;
     const instance__room = await this.roomRepository.findById(roomId)
     const instance__schedule = await this.scheduleRepository.create(schedule);
+
     const seatCodes = instance__room.seatCodes ? JSON.parse(instance__room.seatCodes) : []
 
     await BBPromise.map(seatCodes, (code: string) => {
