@@ -20,6 +20,11 @@ export class Card extends Entity {
   })
   createdAt?: string;
 
+  @property({
+    type: 'number',
+  })
+  userId?: number;
+
   constructor(data?: Partial<Card>) {
     super(data);
   }

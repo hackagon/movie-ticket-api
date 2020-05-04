@@ -1,8 +1,9 @@
 import {Getter, inject} from '@loopback/core';
 import {DefaultCrudRepository, HasOneRepositoryFactory, repository} from '@loopback/repository';
 import {StagingDataSource} from '../datasources';
-import {User, UserCredentials, UserRelations} from '../models';
+import {User, UserCredentials, UserRelations, Card} from '../models';
 import {UserCredentialsRepository} from './user-credentials.repository';
+import {CardRepository} from './card.repository';
 
 export class UserRepository extends DefaultCrudRepository<
   User,
@@ -15,11 +16,15 @@ export class UserRepository extends DefaultCrudRepository<
     typeof User.prototype.id
   >;
 
+  public readonly card: HasOneRepositoryFactory<Card, typeof User.prototype.id>;
+
   constructor(
     @inject('datasources.staging') dataSource: StagingDataSource,
-    @repository.getter('UserCredentialsRepository') protected userCredentialsRepositoryGetter: Getter<UserCredentialsRepository>
+    @repository.getter('UserCredentialsRepository') protected userCredentialsRepositoryGetter: Getter<UserCredentialsRepository>, @repository.getter('CardRepository') protected cardRepositoryGetter: Getter<CardRepository>,
   ) {
     super(User, dataSource);
+    this.card = this.createHasOneRepositoryFactoryFor('card', cardRepositoryGetter);
+    this.registerInclusionResolver('card', this.card.inclusionResolver);
     this.userCredentials = this.createHasOneRepositoryFactoryFor(
       'userCredentials',
       userCredentialsRepositoryGetter,

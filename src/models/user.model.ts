@@ -1,5 +1,6 @@
 import {Entity, hasOne, model, property} from '@loopback/repository';
 import {UserCredentials} from './user-credentials.model';
+import {Card} from './card.model';
 
 @model()
 export class User extends Entity {
@@ -45,6 +46,8 @@ export class User extends Entity {
   })
   createdAt?: string;
 
+  @hasOne(() => Card)
+  card: Card;
   // Indexer property to allow additional data
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
