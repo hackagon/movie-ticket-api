@@ -7,3 +7,4 @@ export * from './user.repository';
 export * from './user-credentials.repository';
 export * from './schedule.repository';
 export * from './card.repository';
+export * from './ticket.repository';

@@ -8,3 +8,4 @@ export * from './user.model';
 
 export * from './schedule.model';
 export * from './card.model';
+export * from './ticket.model';

@@ -12,3 +12,5 @@ export * from './movie-schedule.controller';
 export * from './room-schedule.controller';
 export * from './card.controller';
 export * from './user-card.controller';
+export * from './ticket.controller';
+export * from './card-ticket.controller';
