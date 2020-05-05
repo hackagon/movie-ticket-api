@@ -1,30 +1,14 @@
-import {
-  Count,
-  CountSchema,
-  Filter,
-  repository,
-  Where,
-} from '@loopback/repository';
-import {
-  del,
-  get,
-  getModelSchemaRef,
-  getWhereSchemaFor,
-  param,
-  patch,
-  post,
-  requestBody,
-} from '@loopback/rest';
-import {
-  Movie,
-  Schedule,
-} from '../models';
-import {MovieRepository} from '../repositories';
+import {Count, CountSchema, Filter, repository, Where} from '@loopback/repository';
+import {del, get, getModelSchemaRef, getWhereSchemaFor, param, patch, post, requestBody} from '@loopback/rest';
+import {Movie, Schedule} from '../models';
+import {CinemaRepository, MovieRepository, RoomRepository} from '../repositories';
 
 export class MovieScheduleController {
   constructor(
     @repository(MovieRepository) protected movieRepository: MovieRepository,
-  ) { }
+    @repository(RoomRepository) protected roomRepository: RoomRepository,
+    @repository(CinemaRepository) protected cinemaRepository: CinemaRepository,
+  ) {}
 
   @get('/movies/{id}/schedules', {
     responses: {
@@ -41,8 +25,26 @@ export class MovieScheduleController {
   async find(
     @param.path.number('id') id: number,
     @param.query.object('filter') filter?: Filter<Schedule>,
-  ): Promise<Schedule[]> {
-    return this.movieRepository.schedules(id).find(filter);
+  ): Promise<any[]> {
+
+    const instance__schedules = await this.movieRepository.schedules(id).find(filter);
+
+    const _instance__schedules = []
+
+    for (const index in instance__schedules) {
+      if (instance__schedules.hasOwnProperty(index)) {
+        const instance__schedule = instance__schedules[index];
+        const roomId = instance__schedule.roomId;
+        const instance__room = await this.roomRepository.findById(roomId);
+        const cinemaId = instance__room.cinemaId;
+        const instance__cinema = await this.cinemaRepository.findById(cinemaId);
+        _instance__schedules.push({
+          ...instance__schedules[index],
+          cinema: instance__cinema
+        })
+      }
+    }
+    return _instance__schedules;
   }
 
   @post('/movies/{id}/schedules', {

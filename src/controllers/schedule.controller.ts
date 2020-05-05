@@ -90,10 +90,10 @@ export class ScheduleController {
         const roomId = instance__schedule.roomId;
         const instance__room = await this.roomRepository.findById(roomId);
         const cinemaId = instance__room.cinemaId;
-        const instance__cinnema = await this.cinemaRepository.findById(cinemaId);
+        const instance__cinema = await this.cinemaRepository.findById(cinemaId);
         _instance__schedules.push({
           ...instance__schedules[index],
-          cinema: instance__cinnema
+          cinema: instance__cinema
         })
       }
     }
@@ -137,8 +137,18 @@ export class ScheduleController {
   async findById(
     @param.path.number('id') id: number,
     @param.filter(Schedule, {exclude: 'where'}) filter?: FilterExcludingWhere<Schedule>
-  ): Promise<Schedule> {
-    return this.scheduleRepository.findById(id, filter);
+  ): Promise<any> {
+    const instance__schedule = await this.scheduleRepository.findById(id, filter);
+    const roomId = instance__schedule.roomId;
+    const instance__room = await this.roomRepository.findById(roomId);
+    const cinemaId = instance__room.cinemaId;
+    const instance__cinema = await this.cinemaRepository.findById(cinemaId);
+
+    const _instance__schedule = {
+      ...instance__schedule,
+      cinema: instance__cinema
+    }
+    return _instance__schedule
   }
 
   @patch('/schedules/{id}', {
