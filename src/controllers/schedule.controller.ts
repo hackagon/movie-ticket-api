@@ -2,13 +2,14 @@ import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} fro
 import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
 import BBPromise from "bluebird";
 import {Schedule} from '../models';
-import {RoomRepository, ScheduleRepository, SeatRepository} from '../repositories';
+import {CinemaRepository, RoomRepository, ScheduleRepository, SeatRepository} from '../repositories';
 
 export class ScheduleController {
   constructor(
     @repository(ScheduleRepository) public scheduleRepository: ScheduleRepository,
     @repository(RoomRepository) public roomRepository: RoomRepository,
     @repository(SeatRepository) public seatRepository: SeatRepository,
+    @repository(CinemaRepository) public cinemaRepository: CinemaRepository,
   ) {}
 
   @post('/schedules', {
@@ -70,7 +71,7 @@ export class ScheduleController {
           'application/json': {
             schema: {
               type: 'array',
-              items: getModelSchemaRef(Schedule, {includeRelations: true}),
+              // items: getModelSchemaRef(Schedule, {includeRelations: true}),
             },
           },
         },
@@ -79,8 +80,24 @@ export class ScheduleController {
   })
   async find(
     @param.filter(Schedule) filter?: Filter<Schedule>,
-  ): Promise<Schedule[]> {
-    return this.scheduleRepository.find(filter);
+  ): Promise<any[]> {
+    const instance__schedules = await this.scheduleRepository.find(filter);
+    const _instance__schedules = []
+
+    for (const index in instance__schedules) {
+      if (instance__schedules.hasOwnProperty(index)) {
+        const instance__schedule = instance__schedules[index];
+        const roomId = instance__schedule.roomId;
+        const instance__room = await this.roomRepository.findById(roomId);
+        const cinemaId = instance__room.cinemaId;
+        const instance__cinnema = await this.cinemaRepository.findById(cinemaId);
+        _instance__schedules.push({
+          ...instance__schedules[index],
+          cinema: instance__cinnema
+        })
+      }
+    }
+    return _instance__schedules;
   }
 
   @patch('/schedules', {
