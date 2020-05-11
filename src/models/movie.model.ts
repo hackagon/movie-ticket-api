@@ -26,6 +26,12 @@ export class Movie extends Entity {
     type: 'string',
     required: true,
   })
+  trailerURL: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
   director: string;
 
   @property({
